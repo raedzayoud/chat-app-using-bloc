@@ -1,8 +1,8 @@
 import 'dart:ffi';
 import 'dart:math';
 
+import 'package:chat/blocs/auth_bloc/auth_bloc.dart';
 import 'package:chat/constants.dart';
-import 'package:chat/cubits/login_cubit/login_cubit.dart';
 import 'package:chat/helper/show_snack_bar.dart';
 import 'package:chat/pages/register_page.dart';
 import 'package:chat/widgets/custom_button.dart';
@@ -18,7 +18,7 @@ class LoginPage extends StatelessWidget {
   LoginPage({Key? key}) : super(key: key);
 
   static String id = 'login page';
-  
+
   bool isLoading = false;
 
   GlobalKey<FormState> formKey = GlobalKey();
@@ -26,7 +26,7 @@ class LoginPage extends StatelessWidget {
   String? email, password;
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<LoginCubit, LoginState>(
+    return BlocConsumer<AuthBloc, AuthState>(
       listener: (context, state) {
         if (state is LoginLoading) {
           isLoading = true;
@@ -36,7 +36,7 @@ class LoginPage extends StatelessWidget {
           showSnackBar(context, state.message);
         }
       },
-      builder: (context,state)=> ModalProgressHUD(
+      builder: (context, state) => ModalProgressHUD(
         inAsyncCall: isLoading,
         child: Scaffold(
           backgroundColor: kPrimaryColor,
@@ -105,8 +105,12 @@ class LoginPage extends StatelessWidget {
                   CustomButon(
                     onTap: () async {
                       if (formKey.currentState!.validate()) {
-                        BlocProvider.of<LoginCubit>(context)
-                            .loginUser(email: email!, password: password!);
+                        //Bloc
+                        BlocProvider.of<AuthBloc>(context)
+                            .add(LoginEvent(email!, password!));
+                        //Cubit
+                        // BlocProvider.of<LoginCubit>(context)
+                        //     .loginUser(email: email!, password: password!);
                       } else {}
                     },
                     text: 'LOGIN',
